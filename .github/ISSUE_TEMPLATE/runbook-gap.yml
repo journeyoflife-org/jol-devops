@@ -1,0 +1,74 @@
+name: Runbook Gap
+description: Report a gap or inaccuracy in an operational runbook
+title: "[runbook-gap]: "
+labels: ["documentation", "runbook", "compliance"]
+assignees:
+  - journeyoflife-org/sre-team
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to report gaps, inaccuracies, or missing procedures in runbooks.
+        This is a **SOC 2 compliance requirement** — all gaps must be tracked and resolved.
+
+  - type: dropdown
+    id: runbook
+    attributes:
+      label: Affected Runbook
+      options:
+        - incident/P1-incident-response.md
+        - deployment/production-deploy.md
+        - oncall/on-call-guide.md
+        - security/secret-exposure.md
+        - Other (specify in description)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: soc2-requirement
+    attributes:
+      label: SOC 2 Compliance Requirement
+      description: Which SOC 2 Trust Service Criterion does this gap relate to?
+      options:
+        - CC6.1 - Logical and Physical Access Controls
+        - CC7.1 - System Operations Monitoring
+        - CC7.2 - Incident Response
+        - CC8.1 - Change Management
+        - Not applicable / Unknown
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Critical - Runbook is missing or completely wrong
+        - High - Key steps are missing that could cause outage
+        - Medium - Steps are outdated but still functional
+        - Low - Minor documentation errors
+    validations:
+      required: true
+
+  - type: textarea
+    id: gap-description
+    attributes:
+      label: Gap Description
+      description: Describe what is missing, inaccurate, or unclear
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested-fix
+    attributes:
+      label: Suggested Fix
+      description: If you have a suggestion for resolving this gap
+    validations:
+      required: false
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting Evidence
+      description: Links to incidents, logs, or references that demonstrate this gap

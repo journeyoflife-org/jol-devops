@@ -1,0 +1,48 @@
+name: Weekly Compliance Scan
+
+on:
+  schedule:
+    # Every Monday at 06:00 UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # ─── Full History Secret Scan ────────────────────────────────
+  full-history-scan:
+    name: TruffleHog Full History Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Full history scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified --fail
+
+  # ─── Prometheus Rules Validation ─────────────────────────────
+  validate-prometheus-rules:
+    name: Validate Prometheus Alert Rules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install promtool
+        run: |
+          PROMTOOL_VERSION=2.53.0
+          TARBALL="prometheus-${PROMTOOL_VERSION}.linux-amd64.tar.gz"
+          URL="https://github.com/prometheus/prometheus/releases/download/v${PROMTOOL_VERSION}/${TARBALL}"
+          curl -sSL "${URL}" \
+            | tar xz --strip-components=1 \
+              -C /usr/local/bin \
+              "prometheus-${PROMTOOL_VERSION}.linux-amd64/promtool"
+
+      - name: Validate alerting rules
+        run: promtool check rules observability/alerting/rules/*.yml
+
+      - name: Validate SLO definitions
+        run: promtool check rules observability/slos/*.yaml

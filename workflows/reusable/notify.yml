@@ -1,0 +1,48 @@
+name: Reusable Notify
+
+on:
+  workflow_call:
+    inputs:
+      webhook-url:
+        description: Slack webhook URL
+        required: false
+        type: string
+        default: ""
+      pagerduty-token:
+        description: PagerDuty integration token
+        required: false
+        type: string
+        default: ""
+      environment:
+        description: Deployment environment
+        required: false
+        type: string
+        default: production
+
+jobs:
+  notify-slack:
+    name: Notify Slack
+    runs-on: ubuntu-latest
+    if: inputs.webhook-url != ''
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          webhook-url: ${{ inputs.webhook-url }}
+          payload: |
+            {
+              "text": "Deployment to ${{ inputs.environment }} completed",
+              "channel": "#jol-deploys"
+            }
+
+  notify-pagerduty:
+    name: Notify PagerDuty Alert
+    runs-on: ubuntu-latest
+    if: inputs.pagerduty-token != ''
+    steps:
+      - name: Trigger PagerDuty
+        uses: runelabs/gha-pagerduty@v1
+        with:
+          token: ${{ inputs.pagerduty-token }}
+          action: trigger
+          summary: "Deployment incident to ${{ inputs.environment }}"

@@ -1,68 +1,59 @@
-# JOL (Journey Of Life) DevOps Infrastructure
+# JOL-DevOps
 
-**8-Week Intensive DevOps Learning Program**
+Centralized DevOps platform for [Journey of Life](https://journeyoflife.org) — providing reusable CI/CD workflows, operational runbooks, observability configuration, security policies, and audit tooling.
 
-[![GDPR Compliant](https://img.shields.io/badge/GDPR-Compliant-green.svg)](docs/gdpr-compliance.md)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-
-## Overview
-
-Production-ready infrastructure for:
-- **Kubernetes cluster** (3-node, kubeadm) on Proxmox LXC
-- **1C-Bitrix** self-hosted CMS
-- **Bitrix24 Cloud** CRM integration
-- **Cloudflare** protection (DDoS, WAF, caching)
-- **GitHub Actions** CI/CD pipelines
-
-## Architecture
+## Repository Structure
 
 ```
-80% Home Lab (Proxmox) ←→ Cloudflare Tunnel ←→ Internet
-20% Google Cloud (Free Tier) for backup/DR
+jol-devops/
+├── .github/          # GitHub configuration (CODEOWNERS, PR template, issue templates, CI workflows)
+├── workflows/        # Reusable GitHub Actions workflows (consumed by ALL JOL repositories)
+├── runbooks/         # Operational runbooks (incident response, deployment, on-call, security)
+├── observability/    # Prometheus alerting rules, SLOs, silence templates
+├── monitoring/       # Prometheus and Alertmanager configurations
+├── policies/         # Security policies (SLSA, SBOM)
+├── scripts/          # Automation scripts (tool checks, rollback, SOC 2 evidence, log archival)
+└── docs/             # Architecture Decision Records, SLA policies, developer setup guides
 ```
 
 ## Quick Start
 
-```bash
-# Clone repository
-git clone https://github.com/jol-learner/jol-devops.git
-cd jol-devops
+1. **Verify your environment**:
+   ```bash
+   make check-tools
+   ```
 
-# Follow week-by-week curriculum
-cat docs/week-01-proxmox.md
-```
+2. **Install pre-commit hooks**:
+   ```bash
+   pre-commit install
+   ```
 
-## Hardware Requirements
+3. **Run linting**:
+   ```bash
+   make lint-yaml
+   make lint-shell
+   ```
 
-| Component | Specification |
-|-----------|---------------|
-| CPU | AMD Ryzen 7 3700X (8 cores) |
-| RAM | 64GB DDR4-3600 |
-| GPU | 3x RX5500XT (optional, for ML) |
-| Storage | 1TB NVMe SSD minimum |
+4. **Scan for secrets**:
+   ```bash
+   make scan-secrets
+   ```
 
-## Compliance
+## Key Features
 
-- GDPR (EU/Lithuanian) compliant
-- Data processing documentation included
-- Audit logging enabled
+- **Reusable Workflows**: Docker build with SBOM + cosign signing (SLSA L2), security scanning, Helm deployment with approval gates, Slack/PagerDuty notifications
+- **Observability**: Prometheus alerting rules (ServiceDown, HighErrorRate, BruteForce, CertExpiry, SLOBurn), SLO definitions (99.9% availability, p95 latency)
+- **SOC 2 Compliance**: Automated evidence collection (CC7.1, CC8.1, CC6.1), 12-month log retention, quarterly compliance scans
+- **Security**: TruffleHog secret scanning, cosign keyless image signing, pre-commit hooks with gitleaks
 
-## Directory Structure
+## Contributing
 
-```
-jol-devops/
-├── infrastructure/    # Proxmox, K8s, Cloudflare configs
-├── apps/              # Bitrix, integrations
-├── monitoring/        # Prometheus, Grafana
-├── scripts/           # Automation scripts
-└── docs/              # Week-by-week curriculum
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines and review process.
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for vulnerability reporting procedures.
 
 ## License
 
-MIT License - See [LICENSE](LICENSE)
-
-## Contact
-
-- Domain: gyvenimo-kelias.lt
-- Learner: JOL-learner
+[MIT](LICENSE)

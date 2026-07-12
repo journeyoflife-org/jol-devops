@@ -1,0 +1,35 @@
+# JOL Platform SLO Definitions
+#
+# These SLOs are tracked via Prometheus recording rules and
+# exposed in Grafana dashboards.
+
+slos:
+  - name: jol-platform-availability
+    description: "99.9% availability for all JOL platform services"
+    target: 0.999
+    window: 30d
+    sli:
+      type: availability
+      good: |
+        sum(rate(http_requests_total{status=~"2..|3.."}[5m]))
+      total: |
+        sum(rate(http_requests_total[5m]))
+    alert:
+      burn_rate_threshold: 14.4
+      short_window: 5m
+      long_window: 1h
+
+  - name: jol-platform-latency
+    description: "p95 latency < 500ms for API endpoints"
+    target: 0.99
+    window: 30d
+    sli:
+      type: latency
+      good: |
+        sum(rate(http_request_duration_seconds_bucket{le="0.5"}[5m]))
+      total: |
+        sum(rate(http_request_duration_seconds_count[5m]))
+    alert:
+      burn_rate_threshold: 6.0
+      short_window: 5m
+      long_window: 30m

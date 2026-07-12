@@ -1,0 +1,77 @@
+groups:
+  - name: jol-platform
+    rules:
+      # ─── Service Availability ────────────────────────────────
+      - alert: ServiceDown
+        expr: up{job=~"jol-.*"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: sre
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2 minutes."
+          runbook: "https://github.com/journeyoflife-org/JOL-DevOps/blob/main/runbooks/oncall/on-call-guide.md"
+
+      # ─── Error Rate ─────────────────────────────────────────
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{status=~"5.."}[5m])) by (service)
+            /
+            sum(rate(http_requests_total[5m])) by (service)
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          team: sre
+        annotations:
+          summary: "High error rate on {{ $labels.service }}"
+          description: "Error rate exceeds 5% for {{ $labels.service }} (current: {{ $value | humanizePercentage }})."
+          runbook: "https://github.com/journeyoflife-org/JOL-DevOps/blob/main/runbooks/incident/P1-incident-response.md"
+
+      # ─── Security: Brute Force Detection ────────────────────
+      - alert: BruteForceDetected
+        expr: |
+          increase(http_requests_total{path="/auth/login", status="401"}[10m]) > 50
+        for: 1m
+        labels:
+          severity: warning
+          team: security
+          soc2: cc6.1
+        annotations:
+          summary: "Possible brute-force attack detected"
+          description: "{{ $value }} failed login attempts in the last 10 minutes from {{ $labels.instance }}."
+
+      # ─── Certificate Expiry ─────────────────────────────────
+      - alert: CertExpiringSoon
+        expr: |
+          (cert_manager_certificate_expiration_timestamp_seconds - time()) < (30 * 24 * 3600)
+        for: 1h
+        labels:
+          severity: warning
+          team: sre
+        annotations:
+          summary: "Certificate {{ $labels.name }} expiring soon"
+          description: >-
+            Certificate {{ $labels.name }} in namespace
+            {{ $labels.namespace }} expires in
+            {{ $value | humanizeDuration }}.
+
+      # ─── SLO Burn Rate ──────────────────────────────────────
+      - alert: SLOBurnRateHigh
+        expr: |
+          (
+            1 - (
+              sum(rate(http_requests_total{status=~"2..|3.."}[30m]))
+              /
+              sum(rate(http_requests_total[30m]))
+            )
+          ) > (14.4 * 0.001)
+        for: 5m
+        labels:
+          severity: warning
+          team: sre
+        annotations:
+          summary: "SLO burn rate is elevated"
+          description: "Error budget is being consumed at {{ $value | humanize }}x the sustainable rate."

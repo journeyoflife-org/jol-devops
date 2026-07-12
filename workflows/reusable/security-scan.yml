@@ -1,0 +1,45 @@
+name: Reusable Security Scan
+
+on:
+  workflow_call:
+    inputs:
+      target:
+        description: Scan target (path to scan)
+        required: false
+        type: string
+        default: .
+
+jobs:
+  trufflehog:
+    name: TruffleHog Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified
+
+  pip-audit:
+    name: Python Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run pip-audit
+        run: |
+          pip install pip-audit
+          pip-audit --desc on
+
+  npm-audit:
+    name: Node.js Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        working-directory: ${{ inputs.target }}

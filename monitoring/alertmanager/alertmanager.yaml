@@ -1,0 +1,71 @@
+# Alertmanager Configuration
+# JOL Platform — Routing: critical→PagerDuty, soc2-cc6→security email
+
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: "smtp.journeyoflife.org:587"
+  smtp_from: "alertmanager@journeyoflife.org"
+  smtp_auth_username: "alertmanager@journeyoflife.org"
+
+# ─── Notification Templates ──────────────────────────────────
+templates:
+  - /etc/alertmanager/templates/*.tmpl
+
+# ─── Routing Tree ────────────────────────────────────────────
+route:
+  receiver: default-slack
+  group_by: [alertname, namespace]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+
+  routes:
+    # Critical alerts → PagerDuty
+    - match:
+        severity: critical
+      receiver: pagerduty-critical
+      repeat_interval: 1h
+      group_wait: 10s
+
+    # SOC 2 CC6 alerts → Security email
+    - match:
+        soc2: cc6.1
+      receiver: security-email
+      repeat_interval: 2h
+
+    # Security team alerts
+    - match:
+        team: security
+      receiver: security-email
+      repeat_interval: 2h
+
+# ─── Receivers ───────────────────────────────────────────────
+receivers:
+  - name: default-slack
+    slack_configs:
+      - api_url: https://hooks.slack.com/services/PLACEHOLDER
+        channel: "#jol-alerts"
+        send_resolved: true
+        title: '{{ .GroupLabels.alertname }}'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+
+  - name: pagerduty-critical
+    pagerduty_configs:
+      - service_key: PLACEHOLDER_PAGERDUTY_KEY
+        severity: '{{ .CommonLabels.severity }}'
+        description: '{{ .CommonLabels.alertname }}: {{ .CommonAnnotations.summary }}'
+
+  - name: security-email
+    email_configs:
+      - to: security@journeyoflife.org
+        send_resolved: true
+        headers:
+          Subject: '[SOC2] {{ .GroupLabels.alertname }} — {{ .CommonLabels.severity }}'
+
+# ─── Inhibition Rules ────────────────────────────────────────
+inhibit_rules:
+  - source_match:
+      severity: critical
+    target_match:
+      severity: warning
+    equal: [alertname, namespace]

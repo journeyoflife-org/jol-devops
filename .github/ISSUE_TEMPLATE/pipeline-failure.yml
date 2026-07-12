@@ -1,0 +1,74 @@
+name: Pipeline Failure
+description: Report a CI/CD pipeline failure
+title: "[pipeline-failure]: "
+labels: ["bug", "ci/cd", "pipeline-failure"]
+assignees:
+  - journeyoflife-org/devops-core
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to report a CI/CD pipeline failure.
+        Provide as much detail as possible to speed up triage.
+
+  - type: input
+    id: run-id
+    attributes:
+      label: GitHub Actions Run ID / URL
+      description: Link to the failed workflow run
+      placeholder: "https://github.com/journeyoflife-org/JOL-DevOps/actions/runs/12345678"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: workflow
+    attributes:
+      label: Affected Workflow
+      options:
+        - ci.yml
+        - weekly-compliance.yml
+        - reusable/build.yml
+        - reusable/security-scan.yml
+        - reusable/deploy.yml
+        - reusable/notify.yml
+        - deploy-k8s.yml (legacy)
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact-level
+    attributes:
+      label: Impact Level
+      description: How severely does this failure affect operations?
+      options:
+        - P1 - Production deployment blocked
+        - P2 - Staging/Dev deployment blocked
+        - P3 - Non-blocking (compliance scan, notification)
+        - P4 - Cosmetic / false positive
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-output
+    attributes:
+      label: Error Output
+      description: Paste the relevant error logs from the failed run
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this failure?
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other relevant information (recent merges, infra changes, etc.)

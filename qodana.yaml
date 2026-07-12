@@ -1,0 +1,19 @@
+version: "1.0"
+
+bootstrap: |
+  export QODANA_TOKEN=$QODANA_TOKEN
+
+profile:
+  name: qodana.recommended
+
+include:
+  - name: CheckDependencyLicenses
+
+exclude:
+  - name: All
+    paths:
+      - .venv
+      - node_modules
+      - .git
+
+failThreshold: 0
