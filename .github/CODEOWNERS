@@ -1,23 +1,23 @@
 # CODEOWNERS — https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
 # Global owners
-*                                   @journeyoflife-org/devops-core
+*                                   @journeyoflife-org/devops
 
 # Reusable workflows — require security review
-workflows/reusable/                 @journeyoflife-org/devops-core @journeyoflife-org/security-review
+workflows/reusable/                 @journeyoflife-org/devops @journeyoflife-org/security
 
 # Policies — require security review
-policies/                           @journeyoflife-org/security-review
+policies/                           @journeyoflife-org/security
 
 # Observability & monitoring
-observability/                      @journeyoflife-org/sre-team
-monitoring/                         @journeyoflife-org/sre-team
+observability/                      @journeyoflife-org/devops
+monitoring/                         @journeyoflife-org/devops
 
 # Runbooks
-runbooks/                           @journeyoflife-org/sre-team @journeyoflife-org/devops-core
+runbooks/                           @journeyoflife-org/devops
 
 # Scripts
-scripts/                            @journeyoflife-org/devops-core
+scripts/                            @journeyoflife-org/devops
 
 # Docs
-docs/                               @journeyoflife-org/devops-core
+docs/                               @journeyoflife-org/devops
