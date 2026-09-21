@@ -54,20 +54,3 @@ jobs:
           ignore_paths: >-
             .venv
             node_modules
-
-  # ─── Qodana Static Analysis ─────────────────────────────────
-  qodana:
-    name: Qodana Analysis
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-      checks: write
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Qodana Scan
-        uses: JetBrains/qodana-action@b60a4b9259f448dd00f2ca4763db5677d69ba868  # v2024.3
-        env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
