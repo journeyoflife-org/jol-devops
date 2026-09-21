@@ -34,7 +34,6 @@
 
 - [ ] yamllint passes (`yamllint -c .yamllint.yaml .`)
 - [ ] shellcheck passes for any modified `.sh` files
-- [ ] Qodana analysis passes
 
 ## Screenshots / Evidence
 
