@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Adopted mise: `mise.toml` + `mise.lock` pin shellcheck/yamllint/trufflehog/pre-commit/promtool (per-platform SHA256 + GitHub attestations); CI YAML Lint job now uses pinned `jdx/mise-action`. TruffleHog and ShellCheck actions preserved.
 - Full repository structure: reusable workflows, runbooks, observability, monitoring, policies, docs
 - Reusable GitHub Actions workflows (build, security-scan, deploy, notify)
 - Incident response runbook (P1)

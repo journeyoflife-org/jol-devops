@@ -1,0 +1,28 @@
+[tools]
+python = "3.12"
+uv = "latest"
+shellcheck = "latest"
+yamllint = "latest"
+trufflehog = "latest"
+pre-commit = "latest"
+promtool = "latest"
+
+[tasks.lint-yaml]
+description = "yamllint (mirrors CI YAML Lint job)"
+run = "yamllint -c .yamllint.yaml ."
+
+[tasks.lint-shell]
+description = "shellcheck over repo shell scripts (mirrors Makefile lint-shell)"
+run = "find . -name '*.sh' -not -path './.venv/*' -print0 | xargs -0 shellcheck"
+
+[tasks.scan-secrets]
+description = "trufflehog git-history scan (mirrors CI TruffleHog job)"
+run = "trufflehog git file://. --only-verified --fail"
+
+[tasks.precommit]
+description = "pre-commit run --all-files"
+run = "pre-commit run --all-files"
+
+[tasks.validate-alerts]
+description = "promtool check rules"
+run = "promtool check rules observability/alerting/rules/*.yml"
